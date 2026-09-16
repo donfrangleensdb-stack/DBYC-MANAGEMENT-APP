@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>DBYC - Don Bosco Youth Centre Portal</title>
+  <?!= include('Styles'); ?>
+</head>
+<body>
+
+  <!-- APP HEADER -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand-wrapper" onclick="switchTab('dashboard')">
+        <div class="brand-logo" style="display:flex;align-items:center;justify-content:center;width:48px;height:48px;">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+            <defs>
+              <linearGradient id="goldGradH" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#FCD34D"/>
+                <stop offset="50%" stop-color="#F59E0B"/>
+                <stop offset="100%" stop-color="#B45309"/>
+              </linearGradient>
+              <linearGradient id="blueGradH" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#1E3A8A"/>
+                <stop offset="50%" stop-color="#0F2B5C"/>
+                <stop offset="100%" stop-color="#091A3E"/>
+              </linearGradient>
+            </defs>
+            <circle cx="250" cy="250" r="240" fill="url(#blueGradH)"/>
+            <circle cx="250" cy="250" r="236" fill="none" stroke="url(#goldGradH)" stroke-width="8"/>
+            <circle cx="250" cy="250" r="165" fill="#FFFFFF" stroke="url(#goldGradH)" stroke-width="6"/>
+            <path d="M 180,195 L 250,140 L 320,195 L 305,195 L 250,152 L 195,195 Z" fill="url(#goldGradH)" />
+            <rect x="247" y="112" width="6" height="26" fill="url(#goldGradH)" rx="1"/>
+            <rect x="241" y="118" width="18" height="6" fill="url(#goldGradH)" rx="1"/>
+            <circle cx="250" cy="215" r="14" fill="#1E3A8A"/>
+            <path d="M 233,260 C 233,235 267,235 267,260 L 267,310 L 233,310 Z" fill="#1E3A8A"/>
+            <circle cx="205" cy="228" r="11" fill="#3B82F6"/>
+            <path d="M 190,268 C 190,246 220,246 220,268 L 216,310 L 194,310 Z" fill="#3B82F6"/>
+            <circle cx="295" cy="228" r="11" fill="#3B82F6"/>
+            <path d="M 280,268 C 280,246 310,246 310,268 L 306,310 L 284,310 Z" fill="#3B82F6"/>
+            <path d="M 155,310 Q 250,325 345,310 L 345,325 Q 250,340 155,325 Z" fill="#10B981" />
+            <rect x="160" y="325" width="180" height="42" rx="8" fill="url(#blueGradH)" stroke="url(#goldGradH)" stroke-width="2.5"/>
+            <text x="250" y="354" fill="#FCD34D" font-family="'Segoe UI', Arial, sans-serif" font-size="25" font-weight="900" text-anchor="middle" letter-spacing="5">DBYC</text>
+          </svg>
+        </div>
+        <div class="brand-title-wrap">
+          <h1>DON BOSCO YOUTH CENTRE</h1>
+          <p>DBYC • REASON • RELIGION • LOVING KINDNESS</p>
+        </div>
+      </div>
+
+      <div class="header-security-badge">
+        <div class="role-tag">
+          <span class="role-tag-dot"></span>
+          <span id="current-role-text">Director (Overall Incharge)</span>
+        </div>
+        <button class="btn-switch-role" id="btn-switch-role">🔑 Switch Role</button>
+        <button class="btn-lock" id="btn-lock-app" title="Lock session to Kiosk mode">🔒 Lock</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- NAVIGATION TABS -->
+  <nav class="nav-tabs-bar">
+    <div class="nav-tabs-inner">
+      <button class="nav-tab active" data-tab="dashboard">📊 Dashboard</button>
+      <button class="nav-tab" data-tab="members">👥 Youth Directory</button>
+      <button class="nav-tab" data-tab="scanner">📷 QR Attendance</button>
+      <button class="nav-tab" data-tab="idcards">🪪 ID Badges & QR</button>
+      <button class="nav-tab" data-tab="certificates">📜 Certificates Hub</button>
+      <button class="nav-tab" data-tab="reports">📋 Attendance Reports</button>
+      <button class="nav-tab admin-only" data-tab="settings">⚙️ Settings & Security</button>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="main-content">
+
+    <!-- 1. DASHBOARD TAB -->
+    <section class="tab-pane active" id="tab-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-info">
+            <h4>Total Enrolled Youth</h4>
+            <div class="stat-number" id="stat-total-members">0</div>
+            <span class="stat-sub">Across 6 designated age groups</span>
+          </div>
+          <div class="stat-icon-wrap stat-icon-blue">👥</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-info">
+            <h4>Today's Attendance</h4>
+            <div class="stat-number" id="stat-today-present" style="color: var(--dbyc-green);">0</div>
+            <span class="stat-sub">Synced live with Google Sheets</span>
+          </div>
+          <div class="stat-icon-wrap stat-icon-green">✅</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-info">
+            <h4>Late Arrivals</h4>
+            <div class="stat-number" id="stat-today-late" style="color: var(--dbyc-gold);">0</div>
+            <span class="stat-sub">Checked in after assembly start</span>
+          </div>
+          <div class="stat-icon-wrap stat-icon-gold">⏱️</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-info">
+            <h4>Database Cloud</h4>
+            <div class="stat-number" style="font-size: 1.35rem; color: var(--dbyc-blue);">Google Sheets</div>
+            <span class="stat-sub">0-Budget • Auto Backup Safe</span>
+          </div>
+          <div class="stat-icon-wrap stat-icon-purple">☁️</div>
+        </div>
+      </div>
+
+      <div class="section-title-wrap">
+        <h2 class="section-title"><span>🏛️</span> DBYC Youth Groups (6 Tiers: Sub Juniors to Elders)</h2>
+        <button class="btn btn-primary btn-sm admin-only" onclick="switchTab('scanner')">📷 Open QR Scanner</button>
+      </div>
+
+      <div class="groups-grid" id="dashboard-groups-grid"></div>
+    </section>
+
+    <!-- 2. MEMBERS DIRECTORY TAB -->
+    <section class="tab-pane" id="tab-members">
+      <div class="section-title-wrap">
+        <h2 class="section-title"><span>👥</span> Youth Membership Directory, Postings & Tenure</h2>
+        <button class="btn btn-primary admin-only" id="btn-add-member">➕ Enroll New Member</button>
+      </div>
+
+      <div class="controls-bar">
+        <div class="search-input-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input" id="member-search-input" placeholder="Search by name, ID (e.g. DBYC-INT-001), posting (GS, Sports Sec)...">
+        </div>
+
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <select class="select-filter" id="member-group-filter">
+            <option value="all">All 6 Groups</option>
+            <option value="Sub Juniors Group">Sub Juniors Group (8 – 14 Yrs)</option>
+            <option value="Juniors Group">Juniors Group (15 – 18 Yrs)</option>
+            <option value="Inters Group">Inters Group (19 – 21 Yrs)</option>
+            <option value="Seniors Group">Seniors Group (25 – 34 Yrs)</option>
+            <option value="Super Seniors Group">Super Seniors Group (34 – 55 Yrs)</option>
+            <option value="Elders Group">Elders Group (55+ Yrs)</option>
+          </select>
+
+          <select class="select-filter" id="member-role-filter">
+            <option value="all">All Postings & Roles</option>
+            <option value="General Secretary (GS)">General Secretary (GS)</option>
+            <option value="Assistant General Secretary (AGS)">Assistant General Secretary (AGS)</option>
+            <option value="Sports Secretary">Sports Secretary</option>
+            <option value="Cultural Secretary">Cultural Secretary</option>
+            <option value="Liturgical & Spiritual Secretary">Liturgical & Spiritual Secretary</option>
+            <option value="Media & PR Secretary">Media & PR Secretary</option>
+            <option value="Group Leader">Group Leaders</option>
+            <option value="Assistant Group Leader">Assistant Group Leaders</option>
+            <option value="Group Incharge">Group Incharges</option>
+            <option value="Member">Youth Members</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="dbyc-table">
+          <thead>
+            <tr>
+              <th>Youth Member & ID</th>
+              <th>Group (Age)</th>
+              <th>Posting / Role</th>
+              <th>Time in DBYC (Tenure)</th>
+              <th>Attendance Rate</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="members-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 3. QR ATTENDANCE SCANNER TAB -->
+    <section class="tab-pane" id="tab-scanner">
+      <div class="section-title-wrap">
+        <h2 class="section-title"><span>📷</span> Real-Time QR Code Attendance Scanner</h2>
+        <span style="font-size: 0.85rem; color: var(--text-muted);">
+          Camera scanner with instant audio chime, duplicate detection, and Google Sheets sync
+        </span>
+      </div>
+
+      <div class="scanner-container">
+        <div class="camera-card">
+          <div class="form-group" style="text-align: left;">
+            <label class="form-label">Current Session / Event:</label>
+            <select class="form-control" id="scanner-session-select">
+              <option value="Sunday Youth Assembly">Sunday Youth Assembly</option>
+              <option value="Sports & Youth Games">Sports & Youth Games</option>
+              <option value="Choir & Music Practice">Choir & Music Practice</option>
+              <option value="Leadership & Formation Camp">Leadership & Formation Camp</option>
+              <option value="Catechism & Value Education">Catechism & Value Education</option>
+              <option value="Social Outreach & Service">Social Outreach & Service</option>
+              <option value="Don Bosco Feast Celebration">Don Bosco Feast Celebration</option>
+            </select>
+          </div>
+
+          <div class="camera-viewport" id="qr-reader-view">
+            <div style="padding: 30px; text-align: center;">
+              <div style="font-size: 2.5rem; margin-bottom: 8px;">📷</div>
+              <p>Camera is currently idle.</p>
+              <small>Click "Start Camera" to scan youth ID cards.</small>
+            </div>
+          </div>
+
+          <div class="scanner-actions">
+            <button class="btn btn-primary" id="btn-toggle-camera">📷 Start Camera Scanner</button>
+          </div>
+
+          <div style="margin-top: 24px; padding-top: 20px; border-top: 1px dashed var(--border-light); text-align: left;">
+            <label class="form-label">Forgot Card? Manual ID Check-In:</label>
+            <div style="display: flex; gap: 8px;">
+              <input type="text" class="form-control" id="manual-member-id" placeholder="Enter Member ID (e.g. DBYC-INT-001)...">
+              <button class="btn btn-secondary" id="btn-manual-checkin">Verify</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="scan-history-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h3 style="font-size: 1.05rem; color: var(--dbyc-blue);">⚡ Real-Time Attendance Feed</h3>
+            <span class="status-badge status-present">Google Sheet Live</span>
+          </div>
+          <div class="scan-feed-list" id="scan-feed-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. ID BADGES & QR TAB -->
+    <section class="tab-pane" id="tab-idcards">
+      <div class="section-title-wrap">
+        <h2 class="section-title"><span>🪪</span> Official DBYC Youth Identity Badges, Postings & QR</h2>
+        <button class="btn btn-primary btn-sm" id="btn-print-idcard">🖨️ Print Badge</button>
+      </div>
+
+      <div class="controls-bar">
+        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+          <label class="form-label" style="margin: 0;">Select Member / Officer:</label>
+          <select class="select-filter" id="idcard-member-select" style="min-width: 280px;"></select>
+        </div>
+      </div>
+
+      <div id="idcard-preview-container" style="padding: 20px 0;"></div>
+    </section>
+
+    <!-- 5. CERTIFICATES HUB TAB -->
+    <section class="tab-pane" id="tab-certificates">
+      <div class="section-title-wrap">
+        <h2 class="section-title"><span>📜</span> Auto-Generating Certificates Hub</h2>
+        <button class="btn btn-gold btn-sm" id="btn-print-cert">🖨️ Print / Download PDF</button>
+      </div>
+
+      <div class="controls-bar">
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+          <label class="form-label" style="margin: 0;">Member:</label>
+          <select class="select-filter" id="cert-member-select" style="min-width: 280px;"></select>
+
+          <label class="form-label" style="margin: 0;">Certificate Type:</label>
+          <select class="select-filter" id="cert-type-select">
+            <option value="membership">Official Certificate of Membership</option>
+            <option value="attendance">Certificate of Attendance Excellence</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="cert-preview-wrapper">
+        <div id="cert-render-target"></div>
+      </div>
+    </section>
+
+    <!-- 6. REPORTS TAB -->
+    <section class="tab-pane" id="tab-reports">
+      <div class="section-title-wrap">
+        <h2 class="section-title"><span>📋</span> Attendance History & Audit Records</h2>
+      </div>
+
+      <div class="controls-bar">
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+          <select class="select-filter" id="report-group-filter" onchange="renderReportsView()">
+            <option value="all">All Groups</option>
+            <option value="Sub Juniors Group">Sub Juniors Group (8 – 14)</option>
+            <option value="Juniors Group">Juniors Group (15 – 18)</option>
+            <option value="Inters Group">Inters Group (19 – 21)</option>
+            <option value="Seniors Group">Seniors Group (25 – 34)</option>
+            <option value="Super Seniors Group">Super Seniors Group (34 – 55)</option>
+            <option value="Elders Group">Elders Group (55+)</option>
+          </select>
+
+          <select class="select-filter" id="report-session-filter" onchange="renderReportsView()">
+            <option value="all">All Sessions</option>
+            <option value="Sunday Youth Assembly">Sunday Youth Assembly</option>
+            <option value="Sports & Youth Games">Sports & Youth Games</option>
+            <option value="Choir & Music Practice">Choir & Music Practice</option>
+            <option value="Leadership & Formation Camp">Leadership & Formation Camp</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="dbyc-table">
+          <thead>
+            <tr>
+              <th>Date & Time</th>
+              <th>Member ID</th>
+              <th>Youth Name</th>
+              <th>Group</th>
+              <th>Session</th>
+              <th>Status</th>
+              <th>Marked By</th>
+            </tr>
+          </thead>
+          <tbody id="reports-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 7. SETTINGS TAB -->
+    <section class="tab-pane admin-only" id="tab-settings">
+      <div class="section-title-wrap">
+        <h2 class="section-title"><span>⚙️</span> DBYC System Configuration & Google Sheets Protection</h2>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+        <div class="camera-card" style="text-align: left;">
+          <h3 style="font-size: 1.1rem; color: var(--dbyc-blue); margin-bottom: 14px;">🏛️ Centre Leadership & Signatures</h3>
+          <form id="form-settings">
+            <div class="form-group">
+              <label class="form-label">Youth Centre Name:</label>
+              <input type="text" class="form-control" id="cfg-center-name" required>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Director Name (Incharge):</label>
+                <input type="text" class="form-control" id="cfg-director-name" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Director Official Title:</label>
+                <input type="text" class="form-control" id="cfg-director-title" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Assistant Director Name:</label>
+                <input type="text" class="form-control" id="cfg-asst-name" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Assistant Director Title:</label>
+                <input type="text" class="form-control" id="cfg-asst-title" required>
+              </div>
+            </div>
+            <h4 style="font-size: 0.95rem; color: var(--dbyc-blue); margin: 18px 0 10px 0;">🔐 Security PIN Codes (RBAC)</h4>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Director Master PIN:</label>
+                <input type="password" class="form-control" id="cfg-dir-pin" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Assistant Director PIN:</label>
+                <input type="password" class="form-control" id="cfg-asst-pin" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Group Incharge PIN:</label>
+                <input type="password" class="form-control" id="cfg-inch-pin" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Group Leader PIN:</label>
+                <input type="password" class="form-control" id="cfg-ldr-pin" required>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="margin-top: 10px;">💾 Save Settings to Google Sheet</button>
+          </form>
+        </div>
+
+        <div class="camera-card" style="text-align: left;">
+          <h3 style="font-size: 1.1rem; color: var(--dbyc-blue); margin-bottom: 14px;">🛡️ Google Sheets Cloud Advantage</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 16px;">
+            Because this application runs on <strong>Google Apps Script</strong>, all your youth data is saved in real-time in your Google Sheet tabs:
+            <br><br>
+            • <strong>Members</strong>: Youth directory with age groups & council postings.<br>
+            • <strong>Attendance</strong>: Complete logs with timestamps and session history.<br>
+            • <strong>Settings</strong>: Centre names and leadership PIN codes.<br>
+            • <strong>AuditLogs</strong>: Activity tracking.<br><br>
+            You can view, edit, sort, and share the Google Sheet with directors anytime from Google Drive!
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODALS -->
+  <div class="modal-backdrop" id="modal-role-switch">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">🔐 Role & Access Control</h3>
+        <button class="modal-close-btn" onclick="closeModal('modal-role-switch')">&times;</button>
+      </div>
+      <form id="form-role-switch">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Select Role Level:</label>
+            <select class="form-control" id="role-select">
+              <option value="DIRECTOR">Director (Overall Incharge)</option>
+              <option value="ASST_DIRECTOR">Assistant Director (Direct Incharge)</option>
+              <option value="INCHARGE">Group Incharge</option>
+              <option value="LEADER">Group Leader / Officer</option>
+              <option value="MEMBER_KIOSK">Member Kiosk (Public View / Safe Mode)</option>
+            </select>
+          </div>
+          <div class="form-group" id="role-pin-row">
+            <label class="form-label">Enter Security PIN:</label>
+            <input type="password" class="form-control" id="role-pin-input" placeholder="Enter PIN...">
+            <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 4px; display: block;">
+              Default: Director: <code>1888</code> | Asst. Director: <code>1815</code> | Incharge: <code>2001</code> | Leader: <code>3001</code>
+            </small>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-role-switch')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Unlock Role</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="modal-member">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-member-title">Enroll Youth Member</h3>
+        <button class="modal-close-btn" onclick="closeModal('modal-member')">&times;</button>
+      </div>
+      <form id="form-member">
+        <input type="hidden" id="member-form-id">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Full Name of Member:</label>
+            <input type="text" class="form-control" id="m-name" required placeholder="e.g. Mark Gabriel">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Youth Group (Age Bracket):</label>
+              <select class="form-control" id="m-group" required>
+                <option value="Sub Juniors Group">Sub Juniors Group (Ages 8 – 14)</option>
+                <option value="Juniors Group">Juniors Group (Ages 15 – 18)</option>
+                <option value="Inters Group">Inters Group (Ages 19 – 21)</option>
+                <option value="Seniors Group">Seniors Group (Ages 25 – 34)</option>
+                <option value="Super Seniors Group">Super Seniors Group (Ages 34 – 55)</option>
+                <option value="Elders Group">Elders Group (Ages 55 ABOVE)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Posting / Role:</label>
+              <select class="form-control" id="m-role" required>
+                <option value="Member">Youth Member</option>
+                <option value="General Secretary (GS)">General Secretary (GS)</option>
+                <option value="Assistant General Secretary (AGS)">Assistant General Secretary (AGS)</option>
+                <option value="Sports Secretary">Sports Secretary</option>
+                <option value="Cultural Secretary">Cultural Secretary</option>
+                <option value="Liturgical & Spiritual Secretary">Liturgical & Spiritual Secretary</option>
+                <option value="Media & PR Secretary">Media & PR Secretary</option>
+                <option value="Group Leader">Group Leader</option>
+                <option value="Assistant Group Leader">Assistant Group Leader</option>
+                <option value="Group Incharge">Group Incharge</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Date of Joining DBYC:</label>
+              <input type="date" class="form-control" id="m-joindate" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Date of Birth:</label>
+              <input type="date" class="form-control" id="m-dob">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Blood Group:</label>
+              <select class="form-control" id="m-blood">
+                <option value="O+">O+</option><option value="A+">A+</option><option value="B+">B+</option><option value="AB+">AB+</option>
+                <option value="O-">O-</option><option value="A-">A-</option><option value="B-">B-</option><option value="AB-">AB-</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Gender:</label>
+              <select class="form-control" id="m-gender"><option value="Male">Male</option><option value="Female">Female</option></select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Phone / WhatsApp:</label><input type="text" class="form-control" id="m-phone"></div>
+            <div class="form-group"><label class="form-label">Emergency Contact:</label><input type="text" class="form-control" id="m-emergency"></div>
+          </div>
+          <div class="form-group"><label class="form-label">Parent / Guardian Name:</label><input type="text" class="form-control" id="m-parent"></div>
+          <div class="form-group"><label class="form-label">Special Notes:</label><input type="text" class="form-control" id="m-notes"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-member')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save to Google Sheets</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="modal-scan-result">
+    <div class="modal-box" style="max-width: 440px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Verification Outcome</h3>
+        <button class="modal-close-btn" onclick="closeModal('modal-scan-result')">&times;</button>
+      </div>
+      <div class="modal-body" id="scan-result-content"></div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="closeModal('modal-scan-result')">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <?!= include('Scripts'); ?>
+</body>
+</html>
